@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CommerceCalc</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>SmartSaver <i class="fas fa-percentage"></i></h1>
+                <div class="theme-toggle">
+                    <span>Light</span>
+                    <label class="switch">
+                        <input type="checkbox" id="themeToggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <span>Dark</span>
+                </div>
+            </div>
+            <p class="tagline">Maximize your savings with our intelligent discount calculator</p>
+        </header>
+
+        <main>
+            <div class="calculator-container">
+                <div class="input-section">
+                    <div class="form-group">
+                        <label for="originalPrice">Original Price ($)</label>
+                        <input type="number" id="originalPrice" placeholder="Enter original price" min="0" step="0.01">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="discountType">Discount Type</label>
+                        <select id="discountType">
+                            <option value="percentage">Percentage Off</option>
+                            <option value="fixed">Fixed Amount Off</option>
+                            <option value="bogo">Buy One Get One</option>
+                            <option value="tiered">Tiered Discount</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="discountValueGroup">
+                        <label for="discountValue">Discount Value</label>
+                        <input type="number" id="discountValue" placeholder="Enter discount" min="0" step="0.01">
+                        <span id="discountSymbol">%</span>
+                    </div>
+                    
+                    <div class="form-group" id="tieredDiscountGroup" style="display: none;">
+                        <label>Tiered Discount Rules</label>
+                        <div class="tier-rules">
+                            <div class="tier-rule">
+                                <input type="number" placeholder="Min quantity" class="tier-min" min="1">
+                                <span>+</span>
+                                <input type="number" placeholder="Discount %" class="tier-discount" min="0" max="100" step="1">
+                                <span>% off</span>
+                                <button class="remove-tier"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <button id="addTier" class="btn-secondary">Add Tier</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="quantity">Quantity</label>
+                        <input type="number" id="quantity" placeholder="Enter quantity" min="1" value="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="taxCheckbox"> Include Tax
+                        </label>
+                    </div>
+                    
+                    <div class="form-group" id="taxRateGroup" style="display: none;">
+                        <label for="taxRate">Tax Rate (%)</label>
+                        <input type="number" id="taxRate" placeholder="Enter tax rate" min="0" max="100" step="0.1" value="7.5">
+                    </div>
+                    
+                    <button id="calculateBtn" class="btn-primary">Calculate Savings</button>
+                    <button id="resetBtn" class="btn-secondary">Reset</button>
+                </div>
+                
+                <div class="results-section">
+                    <div class="result-card">
+                        <h3>Price Summary</h3>
+                        <div class="result-row">
+                            <span>Original Price:</span>
+                            <span id="originalPriceResult">$0.00</span>
+                        </div>
+                        <div class="result-row">
+                            <span>Discount Applied:</span>
+                            <span id="discountAppliedResult">$0.00 (0%)</span>
+                        </div>
+                        <div class="result-row highlight">
+                            <span>Discounted Price:</span>
+                            <span id="discountedPriceResult">$0.00</span>
+                        </div>
+                        <div class="result-row" id="taxResultRow" style="display: none;">
+                            <span>Tax:</span>
+                            <span id="taxAmountResult">$0.00</span>
+                        </div>
+                        <div class="result-row highlight" id="totalResultRow" style="display: none;">
+                            <span>Total Price:</span>
+                            <span id="totalPriceResult">$0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <h3>Savings Breakdown</h3>
+                        <div class="result-row">
+                            <span>You Save:</span>
+                            <span id="youSaveResult">$0.00</span>
+                        </div>
+                        <div class="result-row">
+                            <span>Savings Percentage:</span>
+                            <span id="savingsPercentageResult">0%</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar" id="savingsProgress"></div>
+                        </div>
+                        <div class="result-row">
+                            <span>Effective Price:</span>
+                            <span id="effectivePriceResult">$0.00 per item</span>
+                        </div>
+                    </div>
+                    
+                    <div class="result-card" id="bestDealCard" style="display: none;">
+                        <h3><i class="fas fa-trophy"></i> Best Deal</h3>
+                        <div id="bestDealContent"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="features-section">
+                <h2>Advanced Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Price History</h3>
+                        <p>Track price changes over time to identify the best moments to buy.</p>
+                        <button class="btn-secondary" id="showHistory">View History</button>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-bell"></i>
+                        <h3>Price Alerts</h3>
+                        <p>Set up notifications for when items drop below your target price.</p>
+                        <button class="btn-secondary" id="setupAlert">Set Alert</button>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-exchange-alt"></i>
+                        <h3>Compare Prices</h3>
+                        <p>Compare prices across different retailers to ensure you get the best deal.</p>
+                        <button class="btn-secondary" id="comparePrices">Compare</button>
+                    </div>
+                </div>
+            </div>
+                     <!-- Add to features section (before footer) -->
+<div class="persistence-section">
+    <h2>Data Management</h2>
+    <div class="persistence-actions">
+        <button id="saveCalculation" class="btn-primary">
+            <i class="fas fa-save"></i> Save Calculation
+        </button>
+        <button id="loadCalculation" class="btn-primary">
+            <i class="fas fa-folder-open"></i> Load Saved
+        </button>
+        <button id="exportPDF" class="btn-primary">
+            <i class="fas fa-file-pdf"></i> Export PDF
+        </button>
+        <button id="exportCSV" class="btn-primary">
+            <i class="fas fa-file-csv"></i> Export CSV
+        </button>
+        <button id="shareCalculation" class="btn-primary">
+            <i class="fas fa-share-alt"></i> Share
+        </button>
+    </div>
+</div>
+        </main>
+        
+        <footer>
+            <p>Created by Arun kambrekar</p>
+            <p>Uses modern HTML5, CSS3, and JavaScript (ES6+)</p>
+            <div class="footer-links">
+                <a href="#" id="viewCode"><i class="fab fa-github"></i> View Source Code</a>
+                <a href="#" id="learnMore"><i class="fas fa-info-circle"></i> Learn More</a>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Modals -->
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Price History</h2>
+            <div class="chart-container">
+                <canvas id="priceHistoryChart"></canvas>
+            </div>
+            <p>Historical price data helps you identify trends and optimal buying times.</p>
+        </div>
+    </div>
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Calculation History</h2>
+            <div class="saved-calculations-list" id="savedCalculationsList">
+                <!-- Saved calculations will appear here -->
+            </div>
+            <button id="clearHistory" class="btn-danger">Clear History</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="alertModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Set Price Alert</h2>
+            <div class="form-group">
+                <label for="alertPrice">Alert When Price Drops Below ($)</label>
+                <input type="number" id="alertPrice" placeholder="Enter target price">
+            </div>
+            <div class="form-group">
+                <label for="alertEmail">Email for Notifications</label>
+                <input type="email" id="alertEmail" placeholder="your@email.com">
+            </div>
+            <button class="btn-primary" id="saveAlert">Save Alert</button>
+        </div>
+    </div>
+
+    <!-- Add to your modals section -->
+<div class="modal" id="compareModal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Compare Prices Across Retailers</h2>
+        <div class="comparison-results" id="comparisonResults">
+            <!-- Comparison results will appear here -->
+        </div>
+        <div class="retailer-selection">
+            <h3>Select Retailers to Compare</h3>
+            <div class="retailer-checkboxes">
+                <label><input type="checkbox" name="retailer" value="amazon" checked> Amazon</label>
+                <label><input type="checkbox" name="retailer" value="walmart" checked> Walmart</label>
+                <label><input type="checkbox" name="retailer" value="target" checked> Target</label>
+                <label><input type="checkbox" name="retailer" value="bestbuy" checked> Best Buy</label>
+                <label><input type="checkbox" name="retailer" value="ebay" checked> eBay</label>
+            </div>
+        </div>
+        <button id="refreshComparison" class="btn-primary">Refresh Comparison</button>
+    </div>
+</div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
